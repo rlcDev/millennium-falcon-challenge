@@ -1,0 +1,19 @@
+<div id="container">
+  <label for="empire" id="empire-label">Plans of the Empire<span class="mandatory">*</span></label>
+  <input
+    (change)="import($event.target)"
+    id="empire"
+    name="empire"
+    type="file"
+    accept=".json">
+  <div id="feedback-import"
+       *ngIf="importEmpireStatus && !importEmpireStatus.success">{{importEmpireStatus.message}}</div>
+  <div id="imported-empire-container" *ngIf="importEmpireStatus && importEmpireStatus.success">
+    <label for="imported-empire" id="imported-empire-label">Imported empire: </label>
+    <textarea id="imported-empire" rows="10" cols="50" readonly>{{importEmpireStatus.message}}</textarea>
+  </div>
+
+  <div id="mission-odd" *ngIf="importEmpireStatus && importEmpireStatus.success && odd >= 0">
+    <p>The odds that the Millennium Falcon reaches Endor in time and saves the galaxy is {{odd}}%</p>
+  </div>
+</div>
