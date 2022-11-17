@@ -13,7 +13,8 @@
     <textarea id="imported-empire" rows="10" cols="50" readonly>{{importEmpireStatus.message}}</textarea>
   </div>
 
-  <div id="mission-odd" *ngIf="importEmpireStatus && importEmpireStatus.success && odd >= 0">
-    <p>The odds that the Millennium Falcon reaches Endor in time and saves the galaxy is {{odd}}%</p>
+  <div id="mission-odd" *ngIf="importEmpireStatus && importEmpireStatus.success && odd !== -1">
+    <p>The odds that the Millennium Falcon reaches Endor in time and saves the galaxy
+      is {{odd}}%</p>
   </div>
 </div>

@@ -1,18 +1,18 @@
 import {TestBed} from '@angular/core/testing';
 
-import {EmpireService} from './empire.service';
+import {OddMissionService} from './odd-mission.service';
 import {Empire} from "../../models/empire.model";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-describe('EmpireService', () => {
-  let service: EmpireService;
+describe('OddMissionService', () => {
+  let service: OddMissionService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [EmpireService]
+      providers: [OddMissionService]
     });
-    service = TestBed.inject(EmpireService);
+    service = TestBed.inject(OddMissionService);
   });
 
   it('should be created', () => {

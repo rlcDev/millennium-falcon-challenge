@@ -1,4 +1,4 @@
-export interface FeedbackStatus {
+export interface ImportFeedback {
   success: boolean;
   message: string;
 }

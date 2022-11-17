@@ -1,14 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {EmpireService} from "../../../services/empire/empire.service";
-import {MissionService} from "../../../services/mission/mission.service";
+import {OddMissionService} from "../../../services/odd-mission/odd-mission.service";
 import {Observable, Subject, Subscription} from "rxjs";
 import {
-  BOUNTY_HUNTERS_CODE_KEY,
-  BOUNTY_HUNTERS_INSTRUCTION_KEY, DATA_INTEGRITY_ISSUE,
+  DATA_INTEGRITY_ISSUE,
   Empire,
-  FORMAT_ISSUE, IMPORT_ISSUE, SENDING_ISSUE
+  FORMAT_ISSUE, IMPORT_ISSUE
 } from "../../../models/empire.model";
-import {FeedbackStatus} from "../../../../shared/feedback-status.model";
+import {ImportFeedback} from "../../../models/import-feedback.model";
+import {ApiCode, ApiResponse} from "../../../../shared/api-response.model";
 
 @Component({
   selector: 'app-on-board-computer-cont',
@@ -19,11 +18,11 @@ export class OnBoardComputerContComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private fileReader: FileReader = new FileReader();
 
-  missionOdd$: Observable<number> = this.missionService.getMissionOdd();
   importedFile$: Subject<File> = new Subject<File>();
-  importedResult$: Subject<FeedbackStatus> = new Subject<FeedbackStatus>();
+  importedResult$: Subject<ImportFeedback> = new Subject<ImportFeedback>();
+  odd: number = -1;
 
-  constructor(private readonly empireService: EmpireService, private readonly missionService: MissionService) {
+  constructor(private readonly oddMissionService: OddMissionService) {
   }
 
   ngOnInit(): void {
@@ -38,6 +37,7 @@ export class OnBoardComputerContComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.importedFile$.subscribe((file: File) => {
         this.fileReader.readAsText(file);
+
       })
     );
   }
@@ -46,26 +46,23 @@ export class OnBoardComputerContComponent implements OnInit, OnDestroy {
    * Process empire will check the integrity of the provided empire
    * If the empire is correct we will send the empire for processing and return it for the user experience
    *
-   * In case the empire is not correct the just send a feedback
+   * In case the empire is not correct the just send a feedback and prevent a backend call
    *
-   * @param importedEmpire Current imported empire
+   * @param loadedEmpire {string} Current imported empire
    * @private
    */
-  private processEmpire(importedEmpire: string): void {
-    // This is a design choice to respect convention names (from instruction, code convention)
-    const adaptedEmpire: string = importedEmpire.replace(BOUNTY_HUNTERS_INSTRUCTION_KEY, BOUNTY_HUNTERS_CODE_KEY);
+  private processEmpire(loadedEmpire: string): void {
     try {
-      const currentEmpire: Empire = JSON.parse(adaptedEmpire);
-      if (this.empireService.isCorrect(currentEmpire)) {
-        this.subscriptions.push(
-          this.empireService.sendUploadedEmpire(currentEmpire).subscribe((res: boolean) => {
-              this.importedResult$.next(res ? {success: true, message: importedEmpire} : {
-                success: false,
-                message: SENDING_ISSUE
-              });
-            }
-          )
-        );
+      const currentEmpire: Empire = JSON.parse(loadedEmpire);
+      if (this.oddMissionService.isCorrect(currentEmpire)) {
+        const formData: FormData = new FormData();
+        formData.append('file', loadedEmpire);
+        this.oddMissionService.getOdd(formData).subscribe((response: ApiResponse) => {
+          if (response.status === ApiCode.OK) {
+            this.importedResult$.next({success: true, message: loadedEmpire})
+            this.odd = response.value * 100;
+          }
+        })
       } else {
         this.importedResult$.next({success: false, message: DATA_INTEGRITY_ISSUE});
       }

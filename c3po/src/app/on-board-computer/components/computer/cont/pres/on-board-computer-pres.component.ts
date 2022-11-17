@@ -1,6 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Observable, Subject, Subscription} from "rxjs";
-import {FeedbackStatus} from "../../../../../shared/feedback-status.model";
+import {ApiCode, ApiResponse} from "../../../../../shared/api-response.model";
+import {ImportFeedback} from "../../../../models/import-feedback.model";
 
 @Component({
   selector: 'app-on-board-computer-pres',
@@ -10,24 +11,20 @@ import {FeedbackStatus} from "../../../../../shared/feedback-status.model";
 export class OnBoardComputerPresComponent implements OnInit, OnDestroy {
 
   @Input()
-  missionOdd$!: Observable<number>;
+  odd!: number;
   @Input()
-  importedResult$!: Subject<FeedbackStatus>;
+  importedResult$!: Subject<ImportFeedback>;
   @Input()
   importedFile$!: Subject<File>;
 
   private subscriptions: Subscription[] = [];
-  importEmpireStatus!: FeedbackStatus | null;
-
-
-  odd: number = -1;
+  importEmpireStatus!: ImportFeedback | null;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    //this.missionOdd$.subscribe((o: number) => this.odd = o);
-    this.subscriptions.push(this.importedResult$.subscribe((status: FeedbackStatus) => this.importEmpireStatus = status));
+    this.subscriptions.push(this.importedResult$.subscribe((status: ImportFeedback) => this.importEmpireStatus = status));
   }
 
   /**
@@ -42,7 +39,6 @@ export class OnBoardComputerPresComponent implements OnInit, OnDestroy {
         this.importedFile$.next(files[0]);
       }
     }
-    this.odd++;
   }
 
   ngOnDestroy(): void {
