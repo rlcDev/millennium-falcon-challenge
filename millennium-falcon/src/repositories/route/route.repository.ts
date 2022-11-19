@@ -1,14 +1,13 @@
 import { Injectable, OnModuleDestroy } from "@nestjs/common";
 import { Route } from "models/route.model";
 import { ConfigService } from "@nestjs/config";
-import { Observable, Subscriber } from "rxjs";
 import path from "path";
 import { Database } from "sqlite3";
 
 @Injectable()
 export class RouteRepository implements OnModuleDestroy {
   SELECT_ALL_ROUTES_QUERY = "SELECT ORIGIN,DESTINATION,TRAVEL_TIME FROM ROUTES";
-  db: Database;
+  private db: Database;
 
   constructor(private readonly configService: ConfigService) {
     const databasePath = path.join(

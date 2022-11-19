@@ -1,8 +1,8 @@
 {
   "name": "millennium-falcon",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "The Millennium Falcon",
+  "author": "RENAMBATZ Laurent",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -19,8 +19,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "give-me-the-odds:dev": "npm run build && node dist/src/cli/main-cli give-me-the-odds /Users/laurent/Downloads/millenium-falcon.json /Users/laurent/Downloads/empire.json",
-    "give-me-the-odds:prod": "mkdirp dist/cli && "
+    "give-me-the-odds:dev": "npm run build && node dist/src/cli/main-cli /Users/laurent/Downloads/millenium-falcon.json /Users/laurent/Downloads/empire.json",
+    "give-me-the-odds:prod": "mkdirp dist/cli && cp -r dist/resources dist/cli/ && pkg . --target host --output dist/cli/give-me-the-odds --debug",
+    "build:all": "npm run prebuild && npm run build && npm run give-me-the-odds:prod"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -67,8 +68,8 @@
     "give-me-the-odds": "dist/src/cli/main-cli.js"
   },
   "pkg": {
-    "assets": "resources/**/*",
-    "outputPath": "dist"
+    "assets": "resources/**/*.*",
+    "outputPath": "dist/cli"
   },
   "jest": {
     "moduleFileExtensions": [
