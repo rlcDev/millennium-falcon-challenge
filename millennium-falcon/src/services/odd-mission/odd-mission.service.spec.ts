@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OddMissionService } from './odd-mission.service';
-import {HunterPosition} from "../../models/hunter-position.model";
-import {Empire} from "../../models/empire.model";
-import {Planet} from "../../models/planet.model";
-import {Galaxy} from "../../models/galaxy.model";
-import {Falcon} from "../../models/falcon.model";
+import { HunterPosition } from '../../models/hunter-position.model';
+import { Empire } from '../../models/empire.model';
+import { Planet } from '../../models/planet.model';
+import { Galaxy } from '../../models/galaxy.model';
+import { Falcon } from '../../models/falcon.model';
 
 describe('OddMissionService', () => {
   let service: OddMissionService;

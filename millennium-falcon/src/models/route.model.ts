@@ -1,13 +1,29 @@
-import { Column, Model, Table } from 'sequelize-typescript';
+export class Route {
+  private _origin: string;
+  private _destination: string;
+  private _travel_time: number;
 
-@Table
-export class Route extends Model {
-  @Column
-  origin: string;
+  get origin(): string {
+    return this._origin;
+  }
 
-  @Column
-  destination: string;
+  set origin(value: string) {
+    this._origin = value;
+  }
 
-  @Column
-  travel_time: number;
+  get destination(): string {
+    return this._destination;
+  }
+
+  set destination(value: string) {
+    this._destination = value;
+  }
+
+  get travel_time(): number {
+    return this._travel_time;
+  }
+
+  set travel_time(value: number) {
+    this._travel_time = value;
+  }
 }

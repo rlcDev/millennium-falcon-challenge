@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class EmpireDto {
   @ApiProperty({
-    description: 'The countdown before the arrival planet is destroyed'
+    description: 'The countdown before the arrival planet is destroyed',
   })
   countdown: number;
 

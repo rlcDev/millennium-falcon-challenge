@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { RouteRepository } from 'repositories/route/route.repository';
 import { Route } from 'models/route.model';
-import {from, map, Observable} from "rxjs";
+import { RouteRepository } from '../../repositories/route/route.repository';
 
 @Injectable()
 export class RoutesService {
-  constructor(private readonly routeRepository: RouteRepository) {
-  }
+  constructor(private readonly routeRepository: RouteRepository) {}
 
-  getAllRoutes(): Observable<Route[]> {
-    return from(this.routeRepository.getAllRoutes());
+  async getAllRoutes():Promise<Route[]> {
+    return await this.routeRepository.getAllRoutes();
   }
 }

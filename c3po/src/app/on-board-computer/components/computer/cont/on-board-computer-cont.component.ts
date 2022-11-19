@@ -60,7 +60,7 @@ export class OnBoardComputerContComponent implements OnInit, OnDestroy {
         this.oddMissionService.getOdd(formData).subscribe((response: ApiResponse) => {
           if (response.status === ApiCode.OK) {
             this.importedResult$.next({success: true, message: loadedEmpire})
-            this.odd = response.value * 100;
+            this.odd = response.value;
           }
         })
       } else {

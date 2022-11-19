@@ -31,8 +31,7 @@ export class Falcon {
    * @param actualAutonomy {number} The autonomy
    */
   refuelOn(visitedPlanet: VisitedPlanet, autonomy: number): void {
-    visitedPlanet.actualAutonomy =
-      visitedPlanet.actualAutonomy + autonomy;
+    visitedPlanet.actualAutonomy = visitedPlanet.actualAutonomy + autonomy;
     visitedPlanet.addTravelDay(visitedPlanet.getLastTravelDay() + 1);
   }
 

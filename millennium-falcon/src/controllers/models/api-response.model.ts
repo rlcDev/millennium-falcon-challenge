@@ -1,4 +1,4 @@
 export interface OddResponse {
-    value: number;
-    message: string;
+  value: number;
+  message: string;
 }

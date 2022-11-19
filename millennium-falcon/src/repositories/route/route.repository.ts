@@ -1,14 +1,36 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Route } from 'models/route.model';
+import { Injectable, OnModuleDestroy } from "@nestjs/common";
+import { Route } from "models/route.model";
+import { ConfigService } from "@nestjs/config";
+import { Observable, Subscriber } from "rxjs";
+import path from "path";
+import { Database } from "sqlite3";
 
 @Injectable()
-export class RouteRepository {
-  constructor(@InjectModel(Route) private readonly routeModel: typeof Route) {}
+export class RouteRepository implements OnModuleDestroy {
+  SELECT_ALL_ROUTES_QUERY = "SELECT ORIGIN,DESTINATION,TRAVEL_TIME FROM ROUTES";
+  db: Database;
+
+  constructor(private readonly configService: ConfigService) {
+    const databasePath = path.join(
+      "resources",
+      this.configService.get<string>("routes_db")
+    );
+    this.db = new Database(databasePath);
+  }
+
 
   async getAllRoutes(): Promise<Route[]> {
-    return this.routeModel.findAll({
-      attributes: { exclude: ['id', 'createdAt', 'updatedAt'] },
+    return new Promise((resolve, reject) => {
+      this.db.all(this.SELECT_ALL_ROUTES_QUERY, (error, routes: Route[]) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(routes);
+      });
     });
+  }
+
+  onModuleDestroy(): any {
+    this.db.close();
   }
 }
