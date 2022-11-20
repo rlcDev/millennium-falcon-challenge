@@ -21,14 +21,17 @@
         <label>
           <input
             (change)="import($event.target)"
+            accept=".json"
             id="empire"
             name="empire"
-            type="file"
-            accept=".json">
-          <img id="upload" class="upload-file" src="assets/icons/upload.svg" alt="upload">
+            type="file">
+          <img alt="upload" class="upload-file" id="upload" src="assets/icons/upload.svg">
         </label>
-        <div id="mission-odd" *ngIf="importEmpireStatus && importEmpireStatus.success && odd !== -1">
-          <p>This mission's odd is {{odd}}%</p>
+        <div *ngIf="oddResponse && oddResponse.message && oddResponse.error === null" id="mission-odd-successful">
+          <p>Your mission's odd is {{oddResponse.message}}%</p>
+        </div>
+        <div *ngIf="oddResponse && oddResponse.error && oddResponse.message" id="mission-odd-error">
+          <p>{{oddResponse.message}}: {{oddResponse.error}}</p>
         </div>
       </div>
     </div>

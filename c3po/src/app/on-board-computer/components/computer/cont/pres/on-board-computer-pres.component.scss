@@ -116,8 +116,12 @@
           cursor: pointer;
         }
 
-        #mission-odd {
+        #mission-odd-successful, #mission-odd-error {
           font-weight: bold;
+        }
+
+        #mission-odd-error {
+          color: red;
         }
       }
     }
