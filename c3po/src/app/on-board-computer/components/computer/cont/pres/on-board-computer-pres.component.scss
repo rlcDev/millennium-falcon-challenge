@@ -4,6 +4,8 @@
   height: auto;
 
   #session {
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
     width: 25rem;
 
     @keyframes blink {
@@ -112,6 +114,10 @@
         .upload-file {
           width: 200px;
           cursor: pointer;
+        }
+
+        #mission-odd {
+          font-weight: bold;
         }
       }
     }
