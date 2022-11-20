@@ -1,20 +1,36 @@
 <div id="container">
-  <label for="empire" id="empire-label">Plans of the Empire<span class="mandatory">*</span></label>
-  <input
-    (change)="import($event.target)"
-    id="empire"
-    name="empire"
-    type="file"
-    accept=".json">
-  <div id="feedback-import"
-       *ngIf="importEmpireStatus && !importEmpireStatus.success">{{importEmpireStatus.message}}</div>
-  <div id="imported-empire-container" *ngIf="importEmpireStatus && importEmpireStatus.success">
-    <label for="imported-empire" id="imported-empire-label">Imported empire: </label>
-    <textarea id="imported-empire" rows="10" cols="50" readonly>{{importEmpireStatus.message}}</textarea>
+  <div id="session">
+    <div id="terminal-cursor">
+      <h1 id="terminal-welcome">rebels@galaxy: / ></h1>
+      <span></span>
+    </div>
   </div>
-
-  <div id="mission-odd" *ngIf="importEmpireStatus && importEmpireStatus.success && odd !== -1">
-    <p>The odds that the Millennium Falcon reaches Endor in time and saves the galaxy
-      is {{odd}}%</p>
+  <div id="window-container">
+    <div id="window">
+      <div id="window-header">
+        <div id="header-buttons">
+          <div id="close"></div>
+          <div id="collapse"></div>
+          <div id="expand"></div>
+        </div>
+        <div id="window-title">
+          <span id="title">Empire's plan</span>
+        </div>
+      </div>
+      <div id="window-content">
+        <label>
+          <input
+            (change)="import($event.target)"
+            id="empire"
+            name="empire"
+            type="file"
+            accept=".json">
+          <img id="upload" class="upload-file" src="assets/icons/upload.svg" alt="upload">
+        </label>
+        <div id="mission-odd" *ngIf="importEmpireStatus && importEmpireStatus.success && odd !== -1">
+          <p>This mission's odd is {{odd}}%</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
