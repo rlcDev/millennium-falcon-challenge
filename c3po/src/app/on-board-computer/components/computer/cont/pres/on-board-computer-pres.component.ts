@@ -1,35 +1,22 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Observable, Subject, Subscription} from "rxjs";
-import {ApiCode, ApiResponse} from "../../../../../shared/api-response.model";
-import {ImportFeedback} from "../../../../models/import-feedback.model";
+import { Component, Input } from "@angular/core";
+import { Subject } from "rxjs";
+import { OddResponse } from "../../../../models/odd-response.model";
 
 @Component({
-  selector: 'app-on-board-computer-pres',
-  templateUrl: './on-board-computer-pres.component.html',
-  styleUrls: ['./on-board-computer-pres.component.scss']
+  selector: "app-on-board-computer-pres",
+  templateUrl: "./on-board-computer-pres.component.html",
+  styleUrls: ["./on-board-computer-pres.component.scss"]
 })
-export class OnBoardComputerPresComponent implements OnInit, OnDestroy {
+export class OnBoardComputerPresComponent {
 
   @Input()
-  odd!: number;
-  @Input()
-  importedResult$!: Subject<ImportFeedback>;
+  oddResponse!: OddResponse | null;
   @Input()
   importedFile$!: Subject<File>;
 
-  private subscriptions: Subscription[] = [];
-  importEmpireStatus!: ImportFeedback | null;
-
-  constructor() {
-  }
-
-  ngOnInit(): void {
-    this.subscriptions.push(this.importedResult$.subscribe((status: ImportFeedback) => this.importEmpireStatus = status));
-  }
-
   /**
    * Import files
-   * @param target files imported
+   * @param target {EventTarget} files imported
    */
   import(target: EventTarget | null): void {
     const currentTarget = target as HTMLInputElement;
@@ -38,12 +25,6 @@ export class OnBoardComputerPresComponent implements OnInit, OnDestroy {
       if (files && files.length === 1) {
         this.importedFile$.next(files[0]);
       }
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.subscriptions) {
-      this.subscriptions.forEach((s: Subscription) => s.unsubscribe());
     }
   }
 }
