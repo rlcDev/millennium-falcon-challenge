@@ -1,35 +1,32 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { CACHE_MANAGER, Inject, Injectable, Logger } from "@nestjs/common";
+import { Cache } from "cache-manager";
 import { RoutesService } from "services/routes/routes.service";
 import { ConfigService } from "@nestjs/config";
 import { Route } from "models/route.model";
 import { Galaxy } from "models/galaxy.model";
 import { Planet } from "models/planet.model";
 import { Falcon } from "models/falcon.model";
+import { FALCON, GALAXY } from "services/constants/services.constants";
 
 @Injectable()
 export class UniverseService {
   private readonly logger: Logger = new Logger(UniverseService.name);
-  private galaxy: Galaxy | null = null;
-  private falcon: Falcon | null = null;
 
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly routesService: RoutesService,
     private readonly configService: ConfigService
   ) {
   }
 
   async getGalaxy(): Promise<Galaxy> {
-    if (this.galaxy === null) {
-      this.galaxy = await this.createUniverse();
-    }
-    return this.galaxy;
+    const galaxyCached: Galaxy = await this.cacheManager.get(GALAXY);
+    return !galaxyCached ? await this.createUniverse() : galaxyCached;
   }
 
   async getFalcon(galaxy: Galaxy): Promise<Falcon> {
-    if (this.falcon === null) {
-      this.falcon = await this.createFalcon(galaxy);
-    }
-    return this.falcon;
+    const falconCached: Falcon = await this.cacheManager.get(FALCON);
+    return !falconCached ? await this.createFalcon(galaxy) : falconCached;
   }
 
   /**
@@ -66,6 +63,7 @@ export class UniverseService {
     });
     this.logger.log(`Planets created and neighbors set`);
     const galaxy: Galaxy = new Galaxy(planets);
+    // await this.cacheManager.set(GALAXY, galaxy);
     this.logger.log(`Galaxy created`);
     return galaxy;
   }
@@ -96,6 +94,7 @@ export class UniverseService {
     }
     this.logger.log(`Autonomy: ${autonomy}`);
     const falcon: Falcon = new Falcon(autonomy, departurePlanet, arrivalPlanet);
+    // await this.cacheManager.set(FALCON, falcon);
     this.logger.log(`Falcon created`);
     return falcon;
   }
