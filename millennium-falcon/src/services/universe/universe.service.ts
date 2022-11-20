@@ -11,6 +11,7 @@ import { FALCON, GALAXY } from "services/constants/services.constants";
 @Injectable()
 export class UniverseService {
   private readonly logger: Logger = new Logger(UniverseService.name);
+  private readonly cacheTtl: number = 600000; // 10 minutes
 
   constructor(
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
@@ -20,8 +21,22 @@ export class UniverseService {
   }
 
   async getGalaxy(): Promise<Galaxy> {
-    const galaxyCached: Galaxy = await this.cacheManager.get(GALAXY);
-    return !galaxyCached ? await this.createUniverse() : galaxyCached;
+    const galaxySerialized: string = await this.cacheManager.get(GALAXY);
+    if (galaxySerialized === undefined) {
+      this.logger.log("Galaxy is not cached");
+      const newGalaxy = await this.createFromUniverse();
+      this.logger.log("Caching galaxy");
+      await this.cacheManager.set(GALAXY, JSON.stringify(newGalaxy), this.cacheTtl);
+      return newGalaxy;
+    } else {
+      this.logger.log("Retrieving the galaxy from the cache");
+      let deserializedGalaxy: Galaxy = JSON.parse(galaxySerialized);
+      const a = Object.assign(
+        new Galaxy(deserializedGalaxy.planets),
+        deserializedGalaxy
+      );
+      return a;
+    }
   }
 
   async getFalcon(galaxy: Galaxy): Promise<Falcon> {
@@ -30,11 +45,11 @@ export class UniverseService {
   }
 
   /**
-   * Build the universe from
-   * @return {Galaxy}
+   * Build the galaxy from the universe
+   * @return {Galaxy} the galaxy
    * @private
    */
-  private async createUniverse(): Promise<Galaxy> {
+  private async createFromUniverse(): Promise<Galaxy> {
     const routes: Route[] = await this.routesService.getAllRoutes();
     // We first create the planets
     const planetNames: Set<string> = new Set<string>(
@@ -63,7 +78,6 @@ export class UniverseService {
     });
     this.logger.log(`Planets created and neighbors set`);
     const galaxy: Galaxy = new Galaxy(planets);
-    // await this.cacheManager.set(GALAXY, galaxy);
     this.logger.log(`Galaxy created`);
     return galaxy;
   }
@@ -94,7 +108,6 @@ export class UniverseService {
     }
     this.logger.log(`Autonomy: ${autonomy}`);
     const falcon: Falcon = new Falcon(autonomy, departurePlanet, arrivalPlanet);
-    // await this.cacheManager.set(FALCON, falcon);
     this.logger.log(`Falcon created`);
     return falcon;
   }
