@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Planet } from "models/planet.model";
 import { SpaceTravelPath } from "models/space-travel-path.model";
 import { VisitedPlanet } from "models/visited-planet.model";
@@ -12,6 +12,9 @@ import { EmpireService } from "services/empire/empire.service";
 
 @Injectable()
 export class OddMissionService {
+
+  private readonly logger: Logger = new Logger(OddMissionService.name);
+
   constructor(private readonly universeService: UniverseService, private readonly empireService: EmpireService) {
   }
 
@@ -22,6 +25,7 @@ export class OddMissionService {
    * @return The odd x  as 0 < x < 100
    */
   async tellMeTheOdds(empireDto: EmpireDto): Promise<number> {
+    const startDate: Date = new Date();
     const empire: Empire = this.empireService.processImportedEmpire(empireDto);
     const galaxy: Galaxy = await this.universeService.getGalaxy();
     const completePaths: SpaceTravelPath[] =
@@ -30,9 +34,13 @@ export class OddMissionService {
         empire,
         await this.universeService.getFalcon(galaxy)
       );
-    return completePaths.length === 0
+    this.printSpaceTravelPaths(completePaths);
+    this.logger.log(`Found ${completePaths.length} path(s)`)
+    const odd: number = completePaths.length === 0
       ? 0
       : this.computeOdd(this.getHuntersCount(completePaths, empire)) * 100;
+    this.logger.log(`Odd calculated in ${new Date().getTime() - startDate.getTime()}ms`);
+    return odd;
   }
 
   /**
