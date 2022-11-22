@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ControllersModule } from 'controllers/controllers.module';
 import { ConfigModule } from '@nestjs/config';
 import universeJson from './config/configuration';
 import { ServicesModule } from './services/services.module';
+import { MissionOddMiddleware } from './middlewares/mission-odd.middleware';
 
 @Module({
   imports: [
@@ -16,4 +17,8 @@ import { ServicesModule } from './services/services.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(MissionOddMiddleware).forRoutes('mission');
+  }
+}
