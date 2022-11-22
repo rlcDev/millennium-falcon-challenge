@@ -1,43 +1,76 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { CACHE_MANAGER, Inject, Injectable, Logger } from "@nestjs/common";
+import { Cache } from "cache-manager";
 import { RoutesService } from "services/routes/routes.service";
 import { ConfigService } from "@nestjs/config";
 import { Route } from "models/route.model";
 import { Galaxy } from "models/galaxy.model";
 import { Planet } from "models/planet.model";
 import { Falcon } from "models/falcon.model";
+import { FALCON, GALAXY } from "services/constants/services.constants";
+import * as serialijse from "serialijse";
 
 @Injectable()
 export class UniverseService {
   private readonly logger: Logger = new Logger(UniverseService.name);
-  private galaxy: Galaxy | null = null;
-  private falcon: Falcon | null = null;
 
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly routesService: RoutesService,
     private readonly configService: ConfigService
   ) {
-  }
-
-  async getGalaxy(): Promise<Galaxy> {
-    if (this.galaxy === null) {
-      this.galaxy = await this.createUniverse();
-    }
-    return this.galaxy;
-  }
-
-  async getFalcon(galaxy: Galaxy): Promise<Falcon> {
-    if (this.falcon === null) {
-      this.falcon = await this.createFalcon(galaxy);
-    }
-    return this.falcon;
+    // We have circular dependencies in out data model as the graph is not oriented
+    // So the entities cannot be serialized directly to be cached
+    serialijse.declarePersistable(Galaxy);
+    serialijse.declarePersistable(Planet);
+    serialijse.declarePersistable(Falcon);
   }
 
   /**
-   * Build the universe from
+   * Get galaxy
+   * If it's not built or ttl reached --> cache it for 10 min
+   * If built retrieve from cache
    * @return {Galaxy}
+   */
+  async getGalaxy(): Promise<Galaxy> {
+    const galaxySerialized: string = await this.cacheManager.get(GALAXY);
+    if (galaxySerialized === undefined) {
+      this.logger.log("Galaxy is not cached");
+      const newGalaxy = await this.createFromUniverse();
+      this.logger.log("Caching galaxy");
+      await this.cacheManager.set(GALAXY, serialijse.serialize(newGalaxy));
+      return newGalaxy;
+    } else {
+      this.logger.log("Retrieving the galaxy from the cache");
+      return serialijse.deserialize<Galaxy>(galaxySerialized);
+    }
+  }
+
+  /**
+   * Get falcon
+   * If it's not built or ttl reached --> cache it for 10 min
+   * If built retrieve from cache
+   * @return {Falcon}
+   */
+  async getFalcon(galaxy: Galaxy): Promise<Falcon> {
+    const falconSerialize: string = await this.cacheManager.get(FALCON);
+    if (falconSerialize === undefined) {
+      this.logger.log("Falcon is not cached");
+      const newFalcon = await this.createFalcon(galaxy);
+      this.logger.log("Caching falcon");
+      await this.cacheManager.set(FALCON, serialijse.serialize(newFalcon));
+      return newFalcon;
+    } else {
+      this.logger.log("Retrieving the falcon from the cache");
+      return serialijse.deserialize<Falcon>(falconSerialize);
+    }
+  }
+
+  /**
+   * Build the galaxy from the universe
+   * @return {Galaxy} the galaxy
    * @private
    */
-  private async createUniverse(): Promise<Galaxy> {
+  private async createFromUniverse(): Promise<Galaxy> {
     const routes: Route[] = await this.routesService.getAllRoutes();
     // We first create the planets
     const planetNames: Set<string> = new Set<string>(
