@@ -6,7 +6,10 @@ import { RoutesService } from "services/routes/routes.service";
 import { UniverseService } from "services/universe/universe.service";
 
 @Module({
-  imports: [RepositoryModule, CacheModule.register()],
+  imports: [RepositoryModule, CacheModule.register({
+    max: 2,
+    ttl: 600000 // 10 min
+  })],
   providers: [
     EmpireService,
     RoutesService,

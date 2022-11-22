@@ -7,41 +7,62 @@ import { Galaxy } from "models/galaxy.model";
 import { Planet } from "models/planet.model";
 import { Falcon } from "models/falcon.model";
 import { FALCON, GALAXY } from "services/constants/services.constants";
+import * as serialijse from "serialijse";
 
 @Injectable()
 export class UniverseService {
   private readonly logger: Logger = new Logger(UniverseService.name);
-  private readonly cacheTtl: number = 600000; // 10 minutes
 
   constructor(
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly routesService: RoutesService,
     private readonly configService: ConfigService
   ) {
+    // We have circular dependencies in out data model as the graph is not oriented
+    // So the entities cannot be serialized directly to be cached
+    serialijse.declarePersistable(Galaxy);
+    serialijse.declarePersistable(Planet);
+    serialijse.declarePersistable(Falcon);
   }
 
+  /**
+   * Get galaxy
+   * If it's not built or ttl reached --> cache it for 10 min
+   * If built retrieve from cache
+   * @return {Galaxy}
+   */
   async getGalaxy(): Promise<Galaxy> {
     const galaxySerialized: string = await this.cacheManager.get(GALAXY);
     if (galaxySerialized === undefined) {
       this.logger.log("Galaxy is not cached");
       const newGalaxy = await this.createFromUniverse();
       this.logger.log("Caching galaxy");
-      await this.cacheManager.set(GALAXY, JSON.stringify(newGalaxy), this.cacheTtl);
+      await this.cacheManager.set(GALAXY, serialijse.serialize(newGalaxy));
       return newGalaxy;
     } else {
       this.logger.log("Retrieving the galaxy from the cache");
-      let deserializedGalaxy: Galaxy = JSON.parse(galaxySerialized);
-      const a = Object.assign(
-        new Galaxy(deserializedGalaxy.planets),
-        deserializedGalaxy
-      );
-      return a;
+      return serialijse.deserialize<Galaxy>(galaxySerialized);
     }
   }
 
+  /**
+   * Get falcon
+   * If it's not built or ttl reached --> cache it for 10 min
+   * If built retrieve from cache
+   * @return {Falcon}
+   */
   async getFalcon(galaxy: Galaxy): Promise<Falcon> {
-    const falconCached: Falcon = await this.cacheManager.get(FALCON);
-    return !falconCached ? await this.createFalcon(galaxy) : falconCached;
+    const falconSerialize: string = await this.cacheManager.get(FALCON);
+    if (falconSerialize === undefined) {
+      this.logger.log("Falcon is not cached");
+      const newFalcon = await this.createFalcon(galaxy);
+      this.logger.log("Caching falcon");
+      await this.cacheManager.set(FALCON, serialijse.serialize(newFalcon));
+      return newFalcon;
+    } else {
+      this.logger.log("Retrieving the falcon from the cache");
+      return serialijse.deserialize<Falcon>(falconSerialize);
+    }
   }
 
   /**
