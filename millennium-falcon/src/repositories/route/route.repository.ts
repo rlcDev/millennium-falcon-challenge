@@ -17,7 +17,10 @@ export class RouteRepository implements OnModuleDestroy {
     this.db = new Database(databasePath);
   }
 
-
+  /**
+   * Get all routes from the database
+   * @return {Promise} of routes
+   */
   async getAllRoutes(): Promise<Route[]> {
     return new Promise((resolve, reject) => {
       this.db.all(this.SELECT_ALL_ROUTES_QUERY, (error, routes: Route[]) => {

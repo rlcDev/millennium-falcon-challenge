@@ -37,6 +37,9 @@
       ],
       "cli": [
         "cli/*"
+      ],
+      "middlewares": [
+        "middlewares/*"
       ]
     }
   }

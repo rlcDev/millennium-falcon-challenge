@@ -25,11 +25,12 @@ import { OddMissionService } from 'services/odd-mission/odd-mission.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { OddResponse } from 'controllers/models/api-response.model';
-import { EmpireDto } from '../dto/empire.dto';
+import { EmpireDto } from 'controllers/dto/empire.dto';
+import { EmpireError } from 'services/errors/empire.error';
 
 @ApiTags('Mission odd')
 @Controller({ path: 'mission', version: '1' })
-export class MissionOddController {
+export class OddMissionController {
   constructor(private readonly oddMissionService: OddMissionService) {}
 
   @Post('odd')
@@ -68,20 +69,27 @@ export class MissionOddController {
     @Res() response: Response,
   ) {
     try {
-      let empireDto: EmpireDto = JSON.parse(file.buffer.toString());
+      const empireDto = JSON.parse(file.buffer.toString()) as EmpireDto;
       const odd: number = await this.oddMissionService.tellMeTheOdds(empireDto);
-      const OddResponse: OddResponse = {
+      response.status(HttpStatus.OK).json({
         message: odd.toString(),
         statusCode: HttpStatus.OK,
         error: null,
-      };
-      response.status(HttpStatus.OK).json(OddResponse);
-    } catch (error) {
-      response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: INTERNAL_ERROR,
-        error: error.message,
-        statusCode: 400,
       } as OddResponse);
+    } catch (error) {
+      if (error instanceof EmpireError) {
+        response.status(HttpStatus.BAD_REQUEST).json({
+          message: error.message,
+          error: IMPORTED_FILE_ISSUE,
+          statusCode: HttpStatus.BAD_REQUEST,
+        } as OddResponse);
+      } else {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: error.message,
+          error: INTERNAL_ERROR,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        } as OddResponse);
+      }
     }
   }
 }
