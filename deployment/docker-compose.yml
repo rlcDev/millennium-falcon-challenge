@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  millennium-challenge:
+    image: rlcdev/millennium-falcon:latest
+    ports:
+      - "3000:3000"
+    restart: always
+  c3p0:
+    image: rlcdev/millennium-falcon-front:latest
+    ports:
+      - "81:80"
+    restart: always

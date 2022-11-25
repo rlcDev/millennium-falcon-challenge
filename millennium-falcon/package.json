@@ -23,6 +23,7 @@
     "cli-resources-prod:prepare": "mkdirp dist/cli && cp -r dist/resources dist/cli/",
     "cli-resources-dev:prepare": "cp -r dist/resources dist/src/cli/",
     "give-me-the-odds:prod": "npm run cli-resources-prod:prepare && pkg . --target host --output dist/cli/give-me-the-odds",
+    "build:back": "npm run prebuild && npm run build",
     "build:all": "npm run prebuild && npm run build && npm run give-me-the-odds:prod"
   },
   "dependencies": {
