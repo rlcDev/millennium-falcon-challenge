@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { OnBoardComputerContComponent } from './on-board-computer-cont.component';
-import { OddMissionService } from '../../../services/odd-mission/odd-mission.service';
-import { HttpClientModule } from '@angular/common/http';
-import { OnBoardComputerPresComponent } from './pres/on-board-computer-pres.component';
+import { OnBoardComputerContComponent } from "./on-board-computer-cont.component";
+import { OddMissionService } from "../../../services/odd-mission/odd-mission.service";
+import { HttpClientModule } from "@angular/common/http";
+import { OnBoardComputerPresComponent } from "./pres/on-board-computer-pres.component";
 
-describe('OnBoardComputerContComponent', () => {
+describe("OnBoardComputerContComponent", () => {
   let component: OnBoardComputerContComponent;
   let fixture: ComponentFixture<OnBoardComputerContComponent>;
 
@@ -14,9 +14,9 @@ describe('OnBoardComputerContComponent', () => {
       imports: [HttpClientModule],
       declarations: [
         OnBoardComputerContComponent,
-        OnBoardComputerPresComponent,
+        OnBoardComputerPresComponent
       ],
-      providers: [OddMissionService, OddMissionService],
+      providers: [OddMissionService, OddMissionService]
     }).compileComponents();
 
     fixture = TestBed.createComponent(OnBoardComputerContComponent);
@@ -24,7 +24,7 @@ describe('OnBoardComputerContComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

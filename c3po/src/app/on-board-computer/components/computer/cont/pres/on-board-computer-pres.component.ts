@@ -15,7 +15,7 @@ export class OnBoardComputerPresComponent {
   importedFile$!: Subject<File>;
 
   /**
-   * Import files
+   * Upload files
    * @param target {EventTarget} files imported
    */
   import(target: EventTarget | null): void {

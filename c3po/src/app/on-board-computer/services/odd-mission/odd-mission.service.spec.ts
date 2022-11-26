@@ -1,9 +1,9 @@
-import {TestBed} from '@angular/core/testing';
+import { TestBed } from "@angular/core/testing";
 
-import {OddMissionService} from './odd-mission.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { OddMissionService } from "./odd-mission.service";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
-describe('OddMissionService', () => {
+describe("OddMissionService", () => {
   let service: OddMissionService;
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('OddMissionService', () => {
     service = TestBed.inject(OddMissionService);
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(service).toBeTruthy();
   });
 });
