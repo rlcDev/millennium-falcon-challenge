@@ -19,6 +19,6 @@ import { MissionOddMiddleware } from "middlewares/mission-odd.middleware";
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(MissionOddMiddleware).forRoutes("mission");
+    consumer.apply(MissionOddMiddleware).forRoutes("v1/mission");
   }
 }
