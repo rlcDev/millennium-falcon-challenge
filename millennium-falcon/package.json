@@ -19,12 +19,17 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "give-me-the-odds:dev": "npm run build && npm run cli-resources-dev:prepare && node dist/src/cli/main-cli resources/configs/millennium-falcon.json resources/configs/empire.json",
-    "cli-resources-prod:prepare": "mkdirp dist/cli && cp -r dist/resources dist/cli/",
-    "cli-resources-dev:prepare": "cp -r dist/resources dist/src/cli/",
-    "give-me-the-odds:prod": "npm run cli-resources-prod:prepare && pkg . --target node18-macos-x64,node18-macos-arm64,node18-linux-x64,node18-win-x64 --output dist/cli/give-me-the-odds --debug",
+    "cli:dev": "npm run build:back && npm run cli:prepare-resources-dev && node dist/src/cli/main-cli resources/configs/millennium-falcon.json resources/configs/empire.json",
+    "cli:prepare-resources-platform-prod": "mkdir -p dist/cli/$PLATFORM && cp -r dist/resources/ dist/cli/$PLATFORM/resources && rimraf dist/cli/$PLATFORM/resources/addons",
+    "cli:build-platform": "pkg . --target node18-${PLATFORM} --output dist/cli/$PLATFORM/give-me-the-odds",
+    "cli:prepare-resources-dev": "cp -r dist/resources dist/src/cli/",
+    "cli:copy-addon": "cp -r dist/resources/addons/$PLATFORM/* dist/cli/$PLATFORM/",
+    "cli:build-prod-linux": "PLATFORM=linux-x64 npm run cli:prepare-resources-platform-prod  && PLATFORM=linux-x64 npm run cli:build-platform && PLATFORM=linux-x64 npm run cli:copy-addon",
+    "cli:build-prod-win": "PLATFORM=win-x64 npm run cli:prepare-resources-platform-prod && PLATFORM=win-x64 npm run cli:build-platform && PLATFORM=win-x64 npm run cli:copy-addon",
+    "cli:build-prod-macos-x64": "PLATFORM=macos-x64 npm run cli:prepare-resources-platform-prod && PLATFORM=macos-x64 npm run cli:build-platform && PLATFORM=macos-x64 npm run cli:copy-addon",
+    "cli:build-prod": "npm run build:back && npm run cli:build-prod-linux && npm run cli:build-prod-win && npm run cli:build-prod-macos-x64",
     "build:back": "npm run prebuild && npm run build",
-    "build:all": "npm run prebuild && npm run build && npm run give-me-the-odds:prod"
+    "build:all": "npm run prebuild && npm run build && npm run cli:build-prod"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
