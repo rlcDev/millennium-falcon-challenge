@@ -1,13 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-
+/**
+ * Hunter position dto class
+ *
+ * @author Laurent
+ * @version 1.0
+ */
 export class HunterPositionDto {
-  @ApiProperty({
-    description: 'The planet name',
-  })
   planet: string;
-
-  @ApiProperty({
-    description: 'Presence day number',
-  })
   day: number;
 }

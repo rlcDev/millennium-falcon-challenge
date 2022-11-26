@@ -37,6 +37,12 @@
       ],
       "cli": [
         "cli/*"
+      ],
+      "middlewares": [
+        "middlewares/*"
+      ],
+      "utils": [
+        "utils/*"
       ]
     }
   }

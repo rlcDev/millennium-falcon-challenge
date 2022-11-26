@@ -1,8 +1,8 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import {OnBoardComputerPresComponent} from './on-board-computer-pres.component';
+import { OnBoardComputerPresComponent } from "./on-board-computer-pres.component";
 
-describe('OnBoardComputerPresComponent', () => {
+describe("OnBoardComputerPresComponent", () => {
   let component: OnBoardComputerPresComponent;
   let fixture: ComponentFixture<OnBoardComputerPresComponent>;
 
@@ -16,7 +16,7 @@ describe('OnBoardComputerPresComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

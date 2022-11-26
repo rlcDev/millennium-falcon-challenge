@@ -1,3 +1,5 @@
+import { VisitedPlanet } from "models/visited-planet.model";
+
 /**
  * Falcon representing the Falcon vessels
  * - autonomy: Falcon's autonomy
@@ -5,10 +7,8 @@
  * - arrival: Its arrival planet name
  *
  * @author Laurent
- * @version 1
+ * @version 1.0
  */
-import { VisitedPlanet } from './visited-planet.model';
-
 export class Falcon {
   private readonly _autonomy: number;
   private readonly _departurePlanetName: string;
@@ -17,7 +17,7 @@ export class Falcon {
   constructor(
     readonly theAutonomy,
     readonly theDeparturePlanetName,
-    readonly theArrivalPlanetName,
+    readonly theArrivalPlanetName
   ) {
     this._autonomy = theAutonomy;
     this._departurePlanetName = theDeparturePlanetName;
@@ -28,7 +28,7 @@ export class Falcon {
    * Refuel Falcon
    *
    * @param visitedPlanet  {VisitedPlanet} the visited planet on which we refuel
-   * @param actualAutonomy {number} The autonomy
+   * @param autonomy {number} The autonomy
    */
   refuelOn(visitedPlanet: VisitedPlanet, autonomy: number): void {
     visitedPlanet.actualAutonomy = visitedPlanet.actualAutonomy + autonomy;

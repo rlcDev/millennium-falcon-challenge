@@ -1,6 +1,6 @@
 {
   "name": "millennium-falcon",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "The Millennium Falcon",
   "author": "RENAMBATZ Laurent",
   "private": true,
@@ -19,9 +19,17 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "give-me-the-odds:dev": "npm run build && node dist/src/cli/main-cli /Users/laurent/Downloads/millenium-falcon.json /Users/laurent/Downloads/empire.json",
-    "give-me-the-odds:prod": "mkdirp dist/cli && cp -r dist/resources dist/cli/ && pkg . --target host --output dist/cli/give-me-the-odds --debug",
-    "build:all": "npm run prebuild && npm run build && npm run give-me-the-odds:prod"
+    "cli:dev": "npm run build:back && npm run cli:prepare-resources-dev && node dist/src/cli/main-cli resources/configs/millennium-falcon.json resources/configs/empire.json",
+    "cli:prepare-resources-platform-prod": "mkdir -p dist/cli/$PLATFORM && cp -r dist/resources/ dist/cli/$PLATFORM/resources && rimraf dist/cli/$PLATFORM/resources/addons",
+    "cli:build-platform": "pkg . --target node18-${PLATFORM} --output dist/cli/$PLATFORM/give-me-the-odds",
+    "cli:prepare-resources-dev": "cp -r dist/resources dist/src/cli/",
+    "cli:copy-addon": "cp -r dist/resources/addons/$PLATFORM/* dist/cli/$PLATFORM/",
+    "cli:build-prod-linux": "PLATFORM=linux-x64 npm run cli:prepare-resources-platform-prod  && PLATFORM=linux-x64 npm run cli:build-platform && PLATFORM=linux-x64 npm run cli:copy-addon",
+    "cli:build-prod-win": "PLATFORM=win-x64 npm run cli:prepare-resources-platform-prod && PLATFORM=win-x64 npm run cli:build-platform && PLATFORM=win-x64 npm run cli:copy-addon",
+    "cli:build-prod-macos-x64": "PLATFORM=macos-x64 npm run cli:prepare-resources-platform-prod && PLATFORM=macos-x64 npm run cli:build-platform && PLATFORM=macos-x64 npm run cli:copy-addon",
+    "cli:build-prod": "npm run build:back && npm run cli:build-prod-linux && npm run cli:build-prod-win && npm run cli:build-prod-macos-x64",
+    "build:back": "npm run prebuild && npm run build",
+    "build:all": "npm run prebuild && npm run build && npm run cli:build-prod"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -29,6 +37,7 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.1.3",
+    "cache-manager": "^5.1.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "lodash": "^4.17.21",
@@ -37,6 +46,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "serialijse": "^0.3.0",
     "sqlite3": "^5.1.2"
   },
   "devDependencies": {
@@ -55,6 +65,8 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "28.1.3",
+    "nest-commander-testing": "^3.0.1",
+    "node-mocks-http": "^1.12.1",
     "prettier": "^2.3.2",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.3",
@@ -68,14 +80,18 @@
     "give-me-the-odds": "dist/src/cli/main-cli.js"
   },
   "pkg": {
-    "assets": "resources/**/*.*",
-    "outputPath": "dist/cli"
+    "assets": "../resources/**/*.*",
+    "outputPath": "../dist/cli"
   },
   "jest": {
     "moduleFileExtensions": [
       "js",
       "json",
       "ts"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "src"
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",

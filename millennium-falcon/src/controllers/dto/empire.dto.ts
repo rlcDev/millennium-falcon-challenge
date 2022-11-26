@@ -1,15 +1,12 @@
-import { HunterPositionDto } from 'controllers/dto/hunter-position.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { HunterPositionDto } from "controllers/dto/hunter-position.dto";
 
+/**
+ * Empire dto class models the imported empire from the JSON file
+ *
+ * @author Laurent
+ * @version 1.0
+ */
 export class EmpireDto {
-  @ApiProperty({
-    description: 'The countdown before the arrival planet is destroyed',
-  })
   countdown: number;
-
-  @ApiProperty({
-    type: [HunterPositionDto],
-    description: 'Bounty Hunters positions on planets',
-  })
   bounty_hunters: HunterPositionDto[];
 }

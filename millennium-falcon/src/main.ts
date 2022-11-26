@@ -1,25 +1,27 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { VersioningType } from "@nestjs/common";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // Enable cors
-  app.enableCors({ origin: 'http://localhost:4200' });
+  app.enableCors();
+
+  // API versioning
+  app.enableVersioning({
+    type: VersioningType.URI
+  });
 
   // Swagger
   const config = new DocumentBuilder()
-    .setTitle('Millennium Falcon API')
-    .setDescription('The Millennium Falcon API computing the odd mission')
-    .setVersion('1.0')
-    .addTag('')
+    .setTitle("Falcon mission odds' API")
+    .setDescription("The API aims to compute the odds for the Falcon's mission")
+    .setVersion("1.0")
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup("swagger", app, document);
 
-  // Pipes
-  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }
 

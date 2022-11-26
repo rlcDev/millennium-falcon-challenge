@@ -1,14 +1,14 @@
+import { VisitedPlanet } from "models/visited-planet.model";
+import { Empire } from "models/empire.model";
+import _ from "lodash";
+
 /**
  * SpaceTravelPath is composed of
- * - visitedPlanets a visited planet
+ * - visitedPlanets: A visited planet
  *
  * @author Laurent
- * @since 1
+ * @since 1.0
  */
-import { VisitedPlanet } from 'models/visited-planet.model';
-import { Empire } from 'models/empire.model';
-import _ from 'lodash';
-
 export class SpaceTravelPath {
   private _visitedPlanets: VisitedPlanet[] = [];
 
@@ -24,14 +24,14 @@ export class SpaceTravelPath {
   /**
    * Get last visitedPlanet for this path
    *
-   * @return {VisitedPlanet}
+   * @return {VisitedPlanet} last planet visited on the path
    */
   getLastVisitedPlanet(): VisitedPlanet {
     return this.visitedPlanets.reduce(
       (planetA: VisitedPlanet, planetB: VisitedPlanet) =>
         Math.max(...planetA.travelDays) > Math.max(...planetB.travelDays)
           ? planetA
-          : planetB,
+          : planetB
     );
   }
 
@@ -44,7 +44,7 @@ export class SpaceTravelPath {
     const pathWithoutOldVisitedPlanet: VisitedPlanet[] =
       this.visitedPlanets.filter(
         (visitedPlanet: VisitedPlanet) =>
-          newVisitedPlanet.name !== visitedPlanet.name,
+          newVisitedPlanet.name !== visitedPlanet.name
       );
 
     if (pathWithoutOldVisitedPlanet.length === this.visitedPlanets.length - 1) {
@@ -63,7 +63,7 @@ export class SpaceTravelPath {
     let hunterCounter = 0;
     this.visitedPlanets.forEach((visitedPlanet: VisitedPlanet) => {
       const huntersDaysOfPresenceForPlanet = empire.getHuntersDaysOfPresenceOn(
-        visitedPlanet.name,
+        visitedPlanet.name
       );
       if (huntersDaysOfPresenceForPlanet.length > 0) {
         visitedPlanet.travelDays.forEach((day: number) => {
@@ -85,17 +85,17 @@ export class SpaceTravelPath {
    */
   getShiftedSpaceTravelPath(
     visitedPlanetName: string,
-    days: number,
+    days: number
   ): SpaceTravelPath {
     const currentVisitedPlanet: VisitedPlanet = this.visitedPlanets.find(
       (visitedPlanet: VisitedPlanet) =>
-        visitedPlanetName === visitedPlanet.name,
+        visitedPlanetName === visitedPlanet.name
     );
     if (currentVisitedPlanet) {
       const newCurrentVisitedPlanet: VisitedPlanet =
         _.cloneDeep(currentVisitedPlanet);
       const newTravelDays: number[] = newCurrentVisitedPlanet.travelDays.map(
-        (day: number) => day + days,
+        (day: number) => day + days
       );
       newCurrentVisitedPlanet.travelDays = newTravelDays;
       const newSpaceTravelPath = _.cloneDeep(this);
@@ -106,13 +106,23 @@ export class SpaceTravelPath {
 
   /**
    * Check if the current path is listed
+   *
    * @param spaceTravelPaths {Array} of space travel paths
    * @return {boolean} stating the inclusion
    */
-  public isPathAlreadyIncludedIn(spaceTravelPaths: SpaceTravelPath[]): boolean {
+  isPathAlreadyIncludedIn(spaceTravelPaths: SpaceTravelPath[]): boolean {
     return spaceTravelPaths
       .map((path: SpaceTravelPath) => path.getCurrentPathName())
       .includes(this.getCurrentPathName());
+  }
+
+  /**
+   * Check if the current path has a planet given by
+   * @param planetName {string}
+   * @return {boolean} stating if the planet is included
+   */
+  hasPlanet(planetName: string): boolean {
+    return this._visitedPlanets.map((visitedPlanet: VisitedPlanet) => visitedPlanet.name).includes(planetName);
   }
 
   get visitedPlanets(): VisitedPlanet[] {

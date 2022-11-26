@@ -1,4 +1,11 @@
+/**
+ * Odd response
+ *
+ * @author Laurent
+ * @version 1.0
+ */
 export interface OddResponse {
-  value: number;
   message: string;
+  error: string;
+  statusCode: number;
 }

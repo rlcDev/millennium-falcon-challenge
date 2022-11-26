@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Planet } from "models/planet.model";
 import { SpaceTravelPath } from "models/space-travel-path.model";
 import { VisitedPlanet } from "models/visited-planet.model";
@@ -9,48 +9,67 @@ import _ from "lodash";
 import { UniverseService } from "services/universe/universe.service";
 import { EmpireDto } from "controllers/dto/empire.dto";
 import { EmpireService } from "services/empire/empire.service";
+import { OddMissionError } from "services/errors/odd-mission.error";
 
 @Injectable()
 export class OddMissionService {
-  constructor(private readonly universeService: UniverseService, private readonly empireService: EmpireService) {
+  private readonly logger: Logger = new Logger(OddMissionService.name);
+
+  constructor(
+    private readonly universeService: UniverseService,
+    private readonly empireService: EmpireService
+  ) {
   }
 
   /**
    * Tell me the odd
    *
-   * @param empireDto {EmpireDto}
-   * @return The odd x  as 0 < x < 100
+   * @param empireDto {EmpireDto} The imported empire
+   * @return {Promise} of the odd x as 0 < x < 100
    */
   async tellMeTheOdds(empireDto: EmpireDto): Promise<number> {
+    const startDate: Date = new Date();
     const empire: Empire = this.empireService.processImportedEmpire(empireDto);
     const galaxy: Galaxy = await this.universeService.getGalaxy();
-    const completePaths: SpaceTravelPath[] =
-      this.getSuccessfulMissionSpaceTravelPaths(
-        galaxy,
-        empire,
-        await this.universeService.getFalcon(galaxy)
+    this.logger.log(`Computing the odd`);
+    try {
+      const completePaths: SpaceTravelPath[] =
+        this.getSuccessfulMissionSpaceTravelPaths(
+          galaxy,
+          empire,
+          await this.universeService.getFalcon(galaxy)
+        );
+      this.printSpaceTravelPaths(completePaths);
+      const odd: number =
+        completePaths.length === 0
+          ? 0
+          : this.computeOdd(this.getHuntersCount(completePaths, empire)) * 100;
+      this.logger.log(
+        `Odd ${odd} calculated in ${new Date().getTime() - startDate.getTime()}ms`
       );
-    return completePaths.length === 0
-      ? 0
-      : this.computeOdd(this.getHuntersCount(completePaths, empire)) * 100;
+      return odd;
+    } catch (error) {
+      throw new OddMissionError(error.message, this.logger);
+    }
   }
 
   /**
    * Get Hunters count
    *
-   * @param completePaths {Array}
-   * @param empire        {Empire}
+   * @param completePaths {Array} Completed paths
+   * @param empire        {Empire} The current empire
    * @return {number} Hunters count
    */
   private getHuntersCount(
     completePaths: SpaceTravelPath[],
     empire: Empire
   ): number {
+    const startDate: Date = new Date();
     // There is a path and no hunters at all in the universe
     if (completePaths.length > 0 && empire.hunterPositions.length === 0) {
       return 0;
     }
-    // First we are looking for the lowest Hunters count for all space travel path reached at the countdown moment
+    // First we are looking at the lowest Hunters count for all space travel paths reached at the countdown moment
     let lowestHuntersPresenceCount: number = Number.MAX_VALUE;
     const countdown: number = empire.countdown;
     const spaceTravelPathsReachedInTime: SpaceTravelPath[] =
@@ -58,15 +77,27 @@ export class OddMissionService {
         (path: SpaceTravelPath) =>
           path.getLastVisitedPlanet().getLastTravelDay() == countdown
       );
+    this.logger.log(
+      `${spaceTravelPathsReachedInTime.length} path(s) reached at the countdown`
+    );
     for (const pathReachedTime of spaceTravelPathsReachedInTime) {
       const numberOfHuntersMet: number =
         pathReachedTime.computeHuntersPresenceCount(empire);
       if (numberOfHuntersMet === 0) {
+        this.logger.log(
+          `Lowest hunters count is (with a path reached at the countdown): ${numberOfHuntersMet}`
+        );
+        this.logger.log(
+          `getHuntersCount took ${new Date().getTime() - startDate.getTime()}ms`
+        );
         return numberOfHuntersMet;
       } else if (numberOfHuntersMet < lowestHuntersPresenceCount) {
         lowestHuntersPresenceCount = numberOfHuntersMet;
       }
     }
+    this.logger.log(
+      `Lowest hunters count is for path with buffer is: ${lowestHuntersPresenceCount}`
+    );
 
     // Then, we are taking all space travel paths reached before the countdown,
     // And we're going to find for the lowest Hunters count by taking a budget days (remaining days)
@@ -77,11 +108,10 @@ export class OddMissionService {
         (path: SpaceTravelPath) =>
           path.getLastVisitedPlanet().getLastTravelDay() < countdown
       );
+    this.logger.log(`${spaceTravelPathsWithBufferDays.length} path(s) with buffer`);
     if (spaceTravelPathsWithBufferDays.length !== 0) {
       for (const pathWithBufferDays of spaceTravelPathsWithBufferDays) {
-        const bufferDaysBudget: number =
-          countdown -
-          pathWithBufferDays.getLastVisitedPlanet().getLastTravelDay();
+        const bufferDaysBudget: number = countdown - pathWithBufferDays.getLastVisitedPlanet().getLastTravelDay();
         for (let addedDay = 1; addedDay <= bufferDaysBudget; addedDay++) {
           for (const visitedPlanet of pathWithBufferDays.visitedPlanets) {
             const simulatedPathWithBuffer: SpaceTravelPath =
@@ -92,38 +122,44 @@ export class OddMissionService {
             const simulatedHuntersPresenceCount: number =
               simulatedPathWithBuffer.computeHuntersPresenceCount(empire);
             if (simulatedHuntersPresenceCount === 0) {
+              this.logger.log(`Lowest hunters count is (with a path with buffer): ${simulatedHuntersPresenceCount}`);
+              this.logger.log(`getHuntersCount took ${new Date().getTime() - startDate.getTime()}ms`);
               return simulatedHuntersPresenceCount;
-            } else if (
-              simulatedHuntersPresenceCount <
-              lowestHuntersSimulatedPresenceCount
-            ) {
-              lowestHuntersSimulatedPresenceCount =
-                simulatedHuntersPresenceCount;
+            } else if (simulatedHuntersPresenceCount < lowestHuntersSimulatedPresenceCount) {
+              lowestHuntersSimulatedPresenceCount = simulatedHuntersPresenceCount;
             }
           }
         }
       }
+      this.logger.log(`Trying to avoid the hunters. Best Hunters count is ${lowestHuntersSimulatedPresenceCount}`);
     }
+
     // We are taking the minimum
-    return Math.min(
+    const bestHuntersCount: number = Math.min(
       lowestHuntersPresenceCount,
       lowestHuntersSimulatedPresenceCount
     );
+    this.logger.log(`Eventually, best Hunters count is ${bestHuntersCount}`);
+    this.logger.log(
+      `getHuntersCount took ${new Date().getTime() - startDate.getTime()}ms`
+    );
+    return bestHuntersCount;
   }
 
   /**
    * Get all successful travel paths to the arrival planet
    *
-   * @param galaxy {Galaxy}
-   * @param empire {Empire}
-   * @param falcon {Falcon}
-   * @return {Array}
+   * @param galaxy {Galaxy} The galaxy
+   * @param empire {Empire} The empire
+   * @param falcon {Falcon} The falcon
+   * @return {Array} of Paths which represents the possible scenario where the Falcon reaches the arrival planet
    */
   private getSuccessfulMissionSpaceTravelPaths(
     galaxy: Galaxy,
     empire: Empire,
     falcon: Falcon
-  ) {
+  ): SpaceTravelPath[] {
+    const startDate: Date = new Date();
     const countdown: number = empire.countdown;
     const autonomy: number = falcon.autonomy;
     const departurePlanet: Planet = galaxy.planets.find(
@@ -153,10 +189,7 @@ export class OddMissionService {
           const neighbors: Map<Planet, number> = lastVisitedPlanet.neighbors;
           neighbors.forEach((dayToReachNeighbor: number, neighbor: Planet) => {
             // If we are under the countdown to reach the current neighbor
-            if (
-              lastVisitedPlanet.getLastTravelDay() + dayToReachNeighbor <=
-              countdown
-            ) {
+            if (lastVisitedPlanet.getLastTravelDay() + dayToReachNeighbor <= countdown) {
               const spaceTravelPathTmp: SpaceTravelPath = _.cloneDeep(path);
               // And if we have enough autonomy to reach it
               if (dayToReachNeighbor <= lastVisitedPlanet.actualAutonomy) {
@@ -166,18 +199,18 @@ export class OddMissionService {
                   [lastVisitedPlanet.getLastTravelDay() + dayToReachNeighbor],
                   lastVisitedPlanet.actualAutonomy - dayToReachNeighbor
                 );
+                // The graph is not oriented, but we can save time by focusing on the arrival
+                if (!path.hasPlanet(visitedNeighbor.name)) {
+                  // From the previous space path, we create a new space path and add the visited planet which become the last visited neighbor from this path
+                  spaceTravelPathTmp.addVisitedPlanet(visitedNeighbor);
 
-                // From the previous space path, we create a new space path and add the visited planet which become the last visited neighbor from this path
-                spaceTravelPathTmp.addVisitedPlanet(visitedNeighbor);
-
-                // If we reach the targeted planet, we keep this path
-                if (arrivalPlanet.name === visitedNeighbor.name) {
-                  successfulTravelPaths.push(spaceTravelPathTmp);
-                } else {
-                  if (
-                    !spaceTravelPathTmp.isPathAlreadyIncludedIn(travelPathsTmp)
-                  ) {
-                    travelPathsTmp.push(spaceTravelPathTmp);
+                  // If we reach the targeted planet, we keep this path
+                  if (arrivalPlanet.name === visitedNeighbor.name) {
+                    successfulTravelPaths.push(spaceTravelPathTmp);
+                  } else {
+                    if (!spaceTravelPathTmp.isPathAlreadyIncludedIn(travelPathsTmp)) {
+                      travelPathsTmp.push(spaceTravelPathTmp);
+                    }
                   }
                 }
               } else {
@@ -185,12 +218,8 @@ export class OddMissionService {
                 const newLastVisitedPlanet: VisitedPlanet =
                   _.cloneDeep(lastVisitedPlanet);
                 falcon.refuelOn(newLastVisitedPlanet, autonomy);
-                spaceTravelPathTmp.replaceVisitedPlanetInPathBy(
-                  newLastVisitedPlanet
-                );
-                if (
-                  !spaceTravelPathTmp.isPathAlreadyIncludedIn(travelPathsTmp)
-                ) {
+                spaceTravelPathTmp.replaceVisitedPlanetInPathBy(newLastVisitedPlanet);
+                if (!spaceTravelPathTmp.isPathAlreadyIncludedIn(travelPathsTmp)) {
                   travelPathsTmp.push(spaceTravelPathTmp);
                 }
               }
@@ -201,6 +230,7 @@ export class OddMissionService {
         spaceTravelPaths = travelPathsTmp;
         travelPathsTmp = [];
       }
+      this.logger.log(`Found ${successfulTravelPaths.length} path(s) in ${new Date().getTime() - startDate.getTime()}ms`);
     }
     return successfulTravelPaths;
   }
@@ -212,11 +242,16 @@ export class OddMissionService {
    * @private
    */
   private printSpaceTravelPaths(travelPaths: SpaceTravelPath[]): void {
-    console.log(travelPaths.length);
     travelPaths.forEach((spaceTravelPath: SpaceTravelPath) => {
-      console.log("");
-      spaceTravelPath.visitedPlanets.forEach((visitedPlanets: VisitedPlanet) =>
-        console.log(visitedPlanets.name + visitedPlanets.travelDays)
+      this.logger.log(
+        `${spaceTravelPath.visitedPlanets
+          .map(
+            (visitedPlanets: VisitedPlanet) =>
+              `Path: [${
+                visitedPlanets.name
+              }] on day(s) : [${visitedPlanets.travelDays.join(", ")}] `
+          )
+          .join(" ; ")}`
       );
     });
   }
@@ -240,11 +275,11 @@ export class OddMissionService {
    * Build the space travel root path
    *
    * @param departurePlanet {Planet} Planet of departure
-   * @param autonomy        {number}The autonomy
-   * @return {SpaceTravelPath}
+   * @param autonomy        {number} The autonomy
+   * @return {SpaceTravelPath} A travel path initialized
    * @private
    */
-  private getTheSpaceTravelRootPath(departurePlanet: Planet, autonomy: number) {
+  private getTheSpaceTravelRootPath(departurePlanet: Planet, autonomy: number): SpaceTravelPath {
     const spaceTravelPath: SpaceTravelPath = new SpaceTravelPath();
     const departurePlanetVisited = new VisitedPlanet(
       departurePlanet,
