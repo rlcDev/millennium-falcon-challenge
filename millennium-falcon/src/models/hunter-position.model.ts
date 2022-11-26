@@ -4,7 +4,7 @@
  * - daysOfPresence: The days of presence
  *
  * @author Laurent
- * @version 1
+ * @version 1.0
  */
 export class HunterPosition {
   private readonly _planetName: string;

@@ -40,6 +40,9 @@
       ],
       "middlewares": [
         "middlewares/*"
+      ],
+      "utils": [
+        "utils/*"
       ]
     }
   }

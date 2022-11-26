@@ -1,13 +1,13 @@
+import { Planet } from "models/planet.model";
+
 /**
  * Visited planet class is a planet visited belonging to a path
  * - travelDays: Days the Falcon visits this planet
  * - actualAutonomy: Falcon's Autonomy on this planet
  *
  * @author Laurent
- * @version 1
+ * @version 1.0
  */
-import { Planet } from 'models/planet.model';
-
 export class VisitedPlanet extends Planet {
   private _travelDays: number[];
   private _actualAutonomy: number;
@@ -15,7 +15,7 @@ export class VisitedPlanet extends Planet {
   constructor(
     thePlanet: Planet,
     theTravelsDays: number[],
-    theActualAutonomy: number,
+    theActualAutonomy: number
   ) {
     super(thePlanet.name, thePlanet.neighbors);
     this._travelDays = theTravelsDays;
@@ -25,7 +25,7 @@ export class VisitedPlanet extends Planet {
   /**
    * Add a travel day
    *
-   * @param travelDay {number}The day of the travel
+   * @param travelDay {number} The day of the travel
    */
   addTravelDay(travelDay: number): void {
     this.travelDays.push(travelDay);

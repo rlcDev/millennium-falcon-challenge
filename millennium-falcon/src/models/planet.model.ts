@@ -4,7 +4,7 @@
  * - neighbors: Planet and days to go to it
  *
  * @author Laurent
- * @version 1
+ * @version 1.0
  */
 export class Planet {
   private readonly _name: string;
@@ -12,7 +12,7 @@ export class Planet {
 
   constructor(
     readonly theName: string,
-    readonly theNeighbors?: Map<Planet, number>,
+    readonly theNeighbors?: Map<Planet, number>
   ) {
     this._name = theName;
     if (theNeighbors) {
@@ -30,7 +30,7 @@ export class Planet {
     const isNotANeighbor: boolean =
       Array.from(this._neighbors.keys()).length === 0 ||
       Array.from(this._neighbors.keys()).some(
-        (planet: Planet) => newNeighbor.name !== planet.name,
+        (planet: Planet) => newNeighbor.name !== planet.name
       );
     if (isNotANeighbor) {
       this._neighbors.set(newNeighbor, days);
