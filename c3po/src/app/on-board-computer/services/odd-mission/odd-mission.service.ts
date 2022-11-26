@@ -13,7 +13,7 @@ export class OddMissionService {
   }
 
   /**
-   * Get the odd mission for
+   * Get the odd mission
    * @param formData {FormData} The imported file
    * @return {Observable} the response
    */
