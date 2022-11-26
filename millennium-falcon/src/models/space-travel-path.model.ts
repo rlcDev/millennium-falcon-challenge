@@ -1,14 +1,14 @@
-/**
- * SpaceTravelPath is composed of
- * - visitedPlanets a visited planet
- *
- * @author Laurent
- * @since 1
- */
 import { VisitedPlanet } from "models/visited-planet.model";
 import { Empire } from "models/empire.model";
 import _ from "lodash";
 
+/**
+ * SpaceTravelPath is composed of
+ * - visitedPlanets: A visited planet
+ *
+ * @author Laurent
+ * @since 1.0
+ */
 export class SpaceTravelPath {
   private _visitedPlanets: VisitedPlanet[] = [];
 
@@ -24,7 +24,7 @@ export class SpaceTravelPath {
   /**
    * Get last visitedPlanet for this path
    *
-   * @return {VisitedPlanet}
+   * @return {VisitedPlanet} last planet visited on the path
    */
   getLastVisitedPlanet(): VisitedPlanet {
     return this.visitedPlanets.reduce(
@@ -106,6 +106,7 @@ export class SpaceTravelPath {
 
   /**
    * Check if the current path is listed
+   *
    * @param spaceTravelPaths {Array} of space travel paths
    * @return {boolean} stating the inclusion
    */
@@ -116,7 +117,7 @@ export class SpaceTravelPath {
   }
 
   /**
-   * Check in current path has planet given by
+   * Check if the current path has a planet given by
    * @param planetName {string}
    * @return {boolean} stating if the planet is included
    */

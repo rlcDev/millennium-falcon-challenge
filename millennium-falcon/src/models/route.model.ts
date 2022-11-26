@@ -1,3 +1,12 @@
+/**
+ * Route modeling
+ * - origin: The departure
+ * - destination: The arrival
+ * - travel_time: The time to reach the arrival from the departure
+ *
+ * @author Laurent
+ * @version 1.0
+ */
 export class Route {
   private _origin: string;
   private _destination: string;

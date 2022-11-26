@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RouteRepository } from './route.repository';
-import { ConfigModule } from '@nestjs/config';
-import universeJson from 'config/configuration';
-import { Route } from 'models/route.model';
+import { Test, TestingModule } from "@nestjs/testing";
+import { RouteRepository } from "./route.repository";
+import { ConfigModule } from "@nestjs/config";
+import universeJson from "config/configuration";
+import { Route } from "models/route.model";
 
-describe('RouteRepository', () => {
+describe("RouteRepository", () => {
   let repository: RouteRepository;
 
   beforeEach(async () => {
@@ -12,20 +12,20 @@ describe('RouteRepository', () => {
       imports: [
         ConfigModule.forRoot({
           load: [universeJson],
-          isGlobal: true,
-        }),
+          isGlobal: true
+        })
       ],
-      providers: [RouteRepository],
+      providers: [RouteRepository]
     }).compile();
 
     repository = module.get<RouteRepository>(RouteRepository);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(repository).toBeDefined();
   });
 
-  it('should retrieved the items properly', async () => {
+  it("should retrieved the items properly", async () => {
     const routes: Route[] = await repository.getAllRoutes();
     expect(routes).toBeDefined();
     expect(routes.length).toEqual(5);

@@ -1,12 +1,12 @@
-import { HunterPosition } from 'models/hunter-position.model';
+import { HunterPosition } from "models/hunter-position.model";
 
 /**
- * Empire modeling the rules game
- * - countdown: The countdown before the ultimate weapon reaches Endor
+ * Empire modeling
+ * - countdown: The countdown before the ultimate weapon reaches the arrival planet: Endor
  * - huntersPositions: Listing where the bounty hunters are at given days
  *
  * @author Laurent
- * @version 1
+ * @version 1.0
  */
 export class Empire {
   private readonly _countdown: number;
@@ -14,7 +14,7 @@ export class Empire {
 
   constructor(
     readonly theCountDown: number,
-    readonly theHunterPositions: HunterPosition[],
+    readonly theHunterPositions: HunterPosition[]
   ) {
     this._countdown = theCountDown;
     this._huntersPositions = theHunterPositions;
@@ -31,9 +31,9 @@ export class Empire {
       .map((position: HunterPosition) => position.planetName)
       .includes(currentPlanet)
       ? this.hunterPositions.find(
-          (hunterPosition: HunterPosition) =>
-            hunterPosition.planetName === currentPlanet,
-        ).daysOfPresence
+        (hunterPosition: HunterPosition) =>
+          hunterPosition.planetName === currentPlanet
+      ).daysOfPresence
       : [];
   }
 

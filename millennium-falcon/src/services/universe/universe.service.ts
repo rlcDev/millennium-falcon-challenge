@@ -1,11 +1,11 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
-import { Cache } from 'cache-manager';
-import { RoutesService } from 'services/routes/routes.service';
-import { ConfigService } from '@nestjs/config';
-import { Route } from 'models/route.model';
-import { Galaxy } from 'models/galaxy.model';
-import { Planet } from 'models/planet.model';
-import { Falcon } from 'models/falcon.model';
+import { CACHE_MANAGER, Inject, Injectable, Logger } from "@nestjs/common";
+import { Cache } from "cache-manager";
+import { RoutesService } from "services/routes/routes.service";
+import { ConfigService } from "@nestjs/config";
+import { Route } from "models/route.model";
+import { Galaxy } from "models/galaxy.model";
+import { Planet } from "models/planet.model";
+import { Falcon } from "models/falcon.model";
 import {
   ARRIVAL,
   ARRIVAL_PLANET,
@@ -30,10 +30,10 @@ import {
   INVALID_TRAVEL_TIME,
   PLANETS_FOUND,
   RETRIEVE_FALCON_FROM_CACHE,
-  RETRIEVE_GALAXY_FROM_CACHE,
-} from 'services/constants/services.constants';
-import * as serialijse from 'serialijse';
-import { UniverseError } from 'services/errors/universe.error';
+  RETRIEVE_GALAXY_FROM_CACHE
+} from "services/constants/services.constants";
+import * as serialijse from "serialijse";
+import { UniverseError } from "services/errors/universe.error";
 
 @Injectable()
 export class UniverseService {
@@ -50,14 +50,17 @@ export class UniverseService {
   constructor(
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly routesService: RoutesService,
-    private readonly configService: ConfigService,
-  ) {}
+    private readonly configService: ConfigService
+  ) {
+  }
 
   /**
    * Get galaxy
+   *
    * If it's not built or ttl reached --> cache it for 10 min
    * If built retrieve from cache
-   * @return {Galaxy}
+   *
+   * @return {Galaxy} Galaxy
    */
   async getGalaxy(): Promise<Galaxy> {
     const galaxySerialized: string = await this.cacheManager.get(GALAXY);
@@ -75,9 +78,9 @@ export class UniverseService {
 
   /**
    * Get falcon
-   * If it's not built or ttl reached --> cache it for 10 min
-   * If built retrieve from cache
-   * @return {Falcon}
+   *
+   * Same logic than the Galaxy
+   * @return {Falcon} Falcon
    */
   async getFalcon(galaxy: Galaxy): Promise<Falcon> {
     const falconSerialize: string = await this.cacheManager.get(FALCON);
@@ -95,6 +98,7 @@ export class UniverseService {
 
   /**
    * Build the galaxy from the universe
+   *
    * @return {Galaxy} the galaxy
    * @private
    */
@@ -106,45 +110,36 @@ export class UniverseService {
         .map((route: Route) => {
           // All origin planets should be defined properly
           if (!route.origin) {
-            throw new UniverseError(
-              `${INVALID_ORIGIN_PLANET}: ${route.origin}`,
-              this.logger,
-            );
+            throw new UniverseError(`${INVALID_ORIGIN_PLANET}: ${route.origin}`, this.logger);
           }
           // All destination planets should be defined properly
           if (!route.destination) {
-            throw new UniverseError(
-              `${INVALID_DESTINATION_PLANET}: ${route.destination}`,
-              this.logger,
-            );
+            throw new UniverseError(`${INVALID_DESTINATION_PLANET}: ${route.destination}`, this.logger);
           }
           return `${route.origin},${route.destination}`;
         })
-        .join(',')
-        .split(','),
+        .join(",")
+        .split(",")
     );
     this.logger.log(`${planetNames.size} ${PLANETS_FOUND}`);
     const planets: Planet[] = [];
     planetNames.forEach((planetName: string) =>
-      planets.push(new Planet(planetName)),
+      planets.push(new Planet(planetName))
     );
 
     // Then , we define each neighbor
     planets.forEach((planet: Planet) => {
       const routesForPlanet: Route[] = routes.filter(
-        (route: Route) => route.origin === planet.name,
+        (route: Route) => route.origin === planet.name
       );
       routesForPlanet.forEach((route: Route) => {
-        // All time travel should be strictly positive
+        // All time travel days should be strictly positive
         if (route.travel_time <= 0) {
-          throw new UniverseError(
-            `${INVALID_TRAVEL_TIME}: ${route.travel_time}`,
-            this.logger,
-          );
+          throw new UniverseError(`${INVALID_TRAVEL_TIME}: ${route.travel_time}`, this.logger);
         }
 
         const destinationPlanet: Planet = planets.find(
-          (planet: Planet) => route.destination === planet.name,
+          (planet: Planet) => route.destination === planet.name
         );
         planet.addNeighbor(destinationPlanet, route.travel_time);
       });
@@ -162,30 +157,20 @@ export class UniverseService {
    * @private
    */
   private async createFalcon(galaxy: Galaxy): Promise<Falcon> {
-    const departurePlanet: string = this.configService.get<string>(
-      `${DEPARTURE}`,
-    );
+    const departurePlanet: string = this.configService.get<string>(`${DEPARTURE}`);
     const arrivalPlanet: string = this.configService.get<string>(`${ARRIVAL}`);
-    const autonomy: number = this.configService.get<number>(
-      `${AUTONOMY_CONFIG}`,
-    );
+    const autonomy: number = this.configService.get<number>(`${AUTONOMY_CONFIG}`);
 
     // This case should not happen
     // Here I'm making the choice to throw an error
     if (!departurePlanet || !galaxy.doesContainsPlanet(departurePlanet)) {
-      throw new UniverseError(
-        `${INVALID_DEPARTURE_PLANET}: ${departurePlanet}`,
-        this.logger,
-      );
+      throw new UniverseError(`${INVALID_DEPARTURE_PLANET}: ${departurePlanet}`, this.logger);
     }
     this.logger.log(`${DEPARTURE_PLANET}: ${departurePlanet}`);
 
     // Same here
     if (!arrivalPlanet || !galaxy.doesContainsPlanet(arrivalPlanet)) {
-      throw new UniverseError(
-        `${INVALID_ARRIVAL_PLANET}: ${arrivalPlanet}`,
-        this.logger,
-      );
+      throw new UniverseError(`${INVALID_ARRIVAL_PLANET}: ${arrivalPlanet}`, this.logger);
     }
     this.logger.log(`${ARRIVAL_PLANET}: ${arrivalPlanet}`);
 

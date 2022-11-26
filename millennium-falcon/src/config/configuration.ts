@@ -1,3 +1,3 @@
-import universeJson from '../../resources/configs/millennium-falcon.json';
+import universeJson from "../../resources/configs/millennium-falcon.json";
 
 export default () => universeJson;
