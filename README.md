@@ -1,4 +1,5 @@
-[![Build Status](https://work.rlaurent.fr/buildStatus/icon?job=Falcon-challenge&subject=Jenkins%20CD&style=flat-square)](https://work.rlaurent.fr/job/Falcon-challenge/)
+[![CI build Status](https://work.rlaurent.fr/buildStatus/icon?job=Falcon-challenge-dev&subject=Jenkins%20CI&style=flat-square)](https://work.rlaurent.fr/job/Falcon-challenge-dev/)
+[![CD build Status](https://work.rlaurent.fr/buildStatus/icon?job=Falcon-challenge&subject=Jenkins%20CD&style=flat-square)](https://work.rlaurent.fr/job/Falcon-challenge/)
 
 # The Millennium Falcon Challenge
 
@@ -125,7 +126,7 @@ If you would like to contribute to the project, you would need first to git clon
 
 ``npm start``
 
-And to watch the changes : 
+And to watch the changes :
 
 ``npm run start:dev``
 
