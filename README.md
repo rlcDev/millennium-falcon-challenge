@@ -1,3 +1,5 @@
+[![Build Status](https://work.rlaurent.fr/buildStatus/icon?job=Falcon-challenge&subject=Jenkins%20CD&style=flat-square)](https://work.rlaurent.fr/job/Falcon-challenge/)
+
 # The Millennium Falcon Challenge
 
 ## Context
@@ -29,13 +31,13 @@ Eventually you might need [Docker](https://www.docker.com/) with [Docker Compose
 ### Web application
 
 A first way to compute the odd is to use a developed web application which has been
-deployed: [falcon.rlaurent.fr](https://falcon.rlaurent.fr).
+deployed : [falcon.rlaurent.fr](https://falcon.rlaurent.fr).
 
-The UI consists in a basic window computer where you can upload the empire JSON file:
+The UI consists in a basic computer screen where you can upload the empire JSON file by clicking on the icon :
 
 ![web app desktop](docs/webapp-desktop.png)
 
-which is responsive:
+which is responsive :
 
 <img alt="mobile" src="docs/webapp-mobile.jpg" width="200">
 
@@ -45,7 +47,7 @@ A second way to get the odds for a mission is to use the provided CLI, released 
 
 You can get the odds by launching a signed 'give-me-the-odds' executable.
 You must select the executable base on your platform, which is reflected in the folder name of the CLI package
-delivered. The platforms available are:
+delivered. The platforms available are :
 
 - Windows x64
 - Linux x64
@@ -56,23 +58,23 @@ For instance the syntax on an [Archlinux distribution](https://archlinux.fr/) is
 
 ``./give-me-the-odds <path to the millennium-falcon json file> <path to the empire json file>``
 
-**_Note:_** The paths can be relative or absolute.
+**_Note :_** The paths can be relative or absolute.
 
-Example:
+Example :
 
 ![cli success example](docs/cli-successful-example.png)
 
-The CLI should guide you in your travel:
+The CLI should guide you in your travel :
 
-- No arguments provided:
+- No arguments provided :
 
 ![cli no args](docs/cli-no-args.jpg)
 
-- Too many arguments:
+- Too many arguments :
 
 ![cli too many args](docs/cli-too-many-args.png)
 
-- Any time you can consult the help with:
+- Any time you can consult the help with :
 
 ``give-me-the-odds -h``
 
@@ -88,7 +90,7 @@ to [DockerHub](https://hub.docker.com/) :
 - [Backend image](https://hub.docker.com/repository/docker/rlcdev/millennium-falcon)
 - [Frontend image](https://hub.docker.com/repository/docker/rlcdev/millennium-falcon-front)
 
-So you can use docker-compose to deploy it locally. From the root of the project:
+So you can use docker-compose to deploy it locally. From the root of the project :
 
 ``cd deployment && docker-compose up -d``
 
@@ -97,11 +99,11 @@ So you can use docker-compose to deploy it locally. From the root of the project
 Eventually the last way to get the odds is to use [Swagger](https://swagger.io/).
 
 Along with the deliveries a Swagger doc of the API is deployed
-here: [falcon-swagger.rlaurent.fr/swagger](https://falcon-swagger.rlaurent.fr/swagger)
+here : [falcon-swagger.rlaurent.fr/swagger](https://falcon-swagger.rlaurent.fr/swagger)
 
 You can then upload you empire json file and get the odds.
 
-An example:
+An example :
 
 ![swagger](docs/swagger.png)
 
@@ -113,54 +115,58 @@ However, you can discover the exposed API: Falcon mission odds' API :
 
 # Contribution
 
-If you would like to contribute to the project, you would need first to git clone the project:
+If you would like to contribute to the project, you would need first to git clone the project :
 
 `` git clone git@github.com:rlcDev/millennium-falcon-challenge.git``
 
 ### The backend
 
-- To start the backend, you should run (from the project root):
+- To start the backend, you should run :
 
-``cd millenium-falcon && npm start``
+``npm start``
+
+And to watch the changes : 
+
+``npm run start:dev``
 
 And you can target the api on port 3000.
 
-**_Note:_** Swagger will be available at [http://localhost:3000/swagger](http://localhost:3000/swagger)
+**_Note :_** Swagger will be available at [http://localhost:3000/swagger](http://localhost:3000/swagger)
 
 - To run the unit tests :
 
-``cd millenium-falcon && npm run test``
+``npm run test``
 
 - To run the e2e tests :
 
-``cd millenium-falcon && npm run test:e2e``
+``npm run test:e2e``
 
 - To check the test coverage
 
-``cd millenium-falcon && npm run test:cov``
+``npm run test:cov``
 
 Also, there is a script to generate the cli:
 
-``cd millenium-falcon && npm run cli:build-prod``
+``npm run cli:build-prod``
 
 In order to be able to run it, you need have cp command.
 
-**_Note:_** The generated CLI might work on your machine. But if you want to distribute it, you need to sign it.
-You can do it with **ldid** or **codesign**
+**_Note :_** The generated CLI might work on your machine. But if you want to distribute it, you need to sign it.
+You can do it with **ldid** or **codesign**.
 
 At the end all you need is its package.json.
 
 ### The frontend
 
-- To start the frontend. From the project root:
+- To start the frontend.
 
-``cd c3po && npm start``
+``npm start``
 
-**_Note:_** The application will be available on port 4200 [http://localhost:4200](http://localhost:4200)
+**_Note :_** The application will be available on port 4200 [http://localhost:4200](http://localhost:4200)
 
 - To run the unit tests :
 
-``cd c3po && npm run test``
+``npm run test``
 
 Same idea, you could refer to the package.json for other commands.
 
