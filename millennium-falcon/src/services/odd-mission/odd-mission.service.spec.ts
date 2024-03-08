@@ -12,7 +12,7 @@ import { UniverseService } from "services/universe/universe.service";
 import { EmpireService } from "services/empire/empire.service";
 import { EmpireDto } from "controllers/dto/empire.dto";
 import { RoutesService } from "services/routes/routes.service";
-import { CACHE_MANAGER } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import spyOn = jest.spyOn;
 
 describe("OddMissionService", () => {

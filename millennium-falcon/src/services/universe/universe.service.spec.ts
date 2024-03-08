@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UniverseService } from "services/universe/universe.service";
-import { CACHE_MANAGER } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { RoutesService } from "services/routes/routes.service";
 import { ConfigModule } from "@nestjs/config";
 import universeJson from "config/configuration";

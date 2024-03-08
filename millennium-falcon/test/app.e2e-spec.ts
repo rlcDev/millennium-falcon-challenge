@@ -108,8 +108,6 @@ describe("MissionOdd (e2e)", () => {
       });
   });
 
-  //
-
   /**
    * Assert Odd response
    * @param response {OddResponse}
