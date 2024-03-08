@@ -1,5 +1,6 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Cache } from "cache-manager";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { RoutesService } from "services/routes/routes.service";
 import { ConfigService } from "@nestjs/config";
 import { Route } from "models/route.model";

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="universe" uuid="6dd0f418-ac67-4bf3-babc-7050bb0fbc52">
-      <driver-ref>sqlite.xerial</driver-ref>
+      <driver-ref>8f53ed73-57ab-4740-9e17-b545f78b7a4d</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/millennium-falcon/resources/universe.db</jdbc-url>
