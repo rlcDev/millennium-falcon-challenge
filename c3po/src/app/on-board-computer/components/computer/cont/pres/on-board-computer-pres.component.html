@@ -27,12 +27,16 @@
             type="file">
           <img alt="upload" class="upload-file" id="upload" src="assets/icons/upload.svg">
         </label>
-        <div *ngIf="oddResponse && oddResponse.message && oddResponse.error === null" id="mission-odd-successful">
-          <p>Your mission's odd is {{oddResponse.message}}%</p>
-        </div>
-        <div *ngIf="oddResponse && oddResponse.error && oddResponse.message" id="mission-odd-error">
-          <p>{{oddResponse.message}}: {{oddResponse.error}}</p>
-        </div>
+        @if (oddResponse && oddResponse.message && oddResponse.error === null) {
+          <div id="mission-odd-successful">
+            <p>Your mission's odd is {{oddResponse.message}}%</p>
+          </div>
+        }
+        @if (oddResponse && oddResponse.error && oddResponse.message) {
+          <div id="mission-odd-error">
+            <p>{{oddResponse.message}}: {{oddResponse.error}}</p>
+          </div>
+        }
       </div>
     </div>
   </div>
