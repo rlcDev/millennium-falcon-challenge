@@ -36,15 +36,12 @@ export class OddMissionController {
 
   @Post("odd")
   @ApiOkResponse({
-    status: HttpStatus.OK,
     description: ODD_PROPERLY_COMPUTE
   })
   @ApiInternalServerErrorResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: INTERNAL_ERROR
   })
   @ApiBadRequestResponse({
-    status: HttpStatus.BAD_REQUEST,
     description: IMPORTED_FILE_ISSUE
   })
   @ApiConsumes("multipart/form-data")
